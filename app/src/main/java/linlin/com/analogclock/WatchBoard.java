@@ -168,11 +168,11 @@ public class WatchBoard extends View {
 
     //绘制刻度
     private void paintScale(Canvas canvas) {
-        mPaint.setStrokeWidth(SizeUtil.Dp2Px(getContext(), 1));
+        mPaint.setStrokeWidth(DptoPx(1));
         int lineWidth = 0;
         for (int i = 0; i < 60; i++) {
             if (i % 5 == 0) { //整点
-                mPaint.setStrokeWidth(SizeUtil.Dp2Px(getContext(), 1.5f));
+                mPaint.setStrokeWidth(DptoPx(2));
                 mPaint.setColor(mColorLong);
                 lineWidth = 40;
                 //===============绘制文字===复制网上的==start
