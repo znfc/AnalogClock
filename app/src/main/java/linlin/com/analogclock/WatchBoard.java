@@ -144,6 +144,22 @@ public class WatchBoard extends View {
         }
     }
 
+    /**
+     * 个人对canvas的理解
+     * canvas网上都是是画布，我个人理解它不单单是画布那么简单
+     * 我理解它是透明的多层的带有坐标系的画布，最底层有一个superView（可以理解为是手机屏幕吧，反正就是想说它是不受canvas影响的）
+     * canvas上画的东西最终都是在它上边显示的。
+     * 比如canvas.translate(100 , 100);这个函数，就是以当前（记住这个词 当前）画布坐标系数为参考的（0,0）点移动到（100,100）
+     * 刚刚提到“当前”这个词,比如执行上边的translate(100 , 100)方法前调用过canvas.rotate(20);那当前的canvas就是
+     * 顺时针旋转了20度，在这个基础上（就是歪着的坐标系）向（100,100）移动（以手机屏幕为坐标系的话是想75度（20+45）方向移动）
+     *每调用一次canvas.save()canvas就会往栈里压一层，之前画的东东都显示在superView上不会被改变了不管canvas怎么搞都不会改变了
+     * canvas.save()只是保存了当前canvas的坐标系数，至于它画的东东都已经定型到superView上了
+     * 所以canvas.restore()的也只是恢复了栈顶的canvas的坐标系数，也就是恢复了栈顶的那一层透明的canvas，
+     * 至于保存时该层canvas上画的东东都已经定型到superView上了。
+     * canvas.restore()只是想恢复上一次保存的canvas继续用来作画。大概这么理解吧
+     *
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
