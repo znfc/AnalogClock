@@ -54,23 +54,34 @@ public class WatchBoard extends View {
     private void obtainStyledAttrs(AttributeSet attrs){
         TypedArray array = null;
         try {
-            array = getContext().obtainStyledAttributes(attrs,R.styleable.WatchBoard);
-            mRadius = array.getDimension(R.styleable.WatchBoard_wb_pointer_corner_radius,40);
-            mPadding = array.getDimension(R.styleable.WatchBoard_wb_padding,10);
-            mTextSize = array.getDimension(R.styleable.WatchBoard_wb_text_size,5);
-            mHourPointWidth = array.getDimension(R.styleable.WatchBoard_wb_hour_pointer_width,5);
-            mMinutePointWidth = array.getDimension(R.styleable.WatchBoard_wb_minute_pointer_width,5);
-            mSecondPointWidth = array.getDimension(R.styleable.WatchBoard_wb_second_pointer_width,5);
-            mPointRadius = (int)array.getDimension(R.styleable.WatchBoard_wb_pointer_corner_radius,3);
-            mPointEndLength = array.getDimension(R.styleable.WatchBoard_wb_pointer_end_length,6);
-            mColorLong = array.getColor(R.styleable.WatchBoard_wb_scale_long_color,0);
-            mColorShort = array.getColor(R.styleable.WatchBoard_wb_scale_short_color,0);
-            mHourPointColor = array.getColor(R.styleable.WatchBoard_wb_hour_pointer_color,5);
-            mMinutePointColor = array.getColor(R.styleable.WatchBoard_wb_minute_pointer_color,6);
-            mSecondPointColor = array.getColor(R.styleable.WatchBoard_wb_second_pointer_color,9);
+            array = getContext().obtainStyledAttributes(attrs, R.styleable.WatchBoard);
+            mPadding = array.getDimension(R.styleable.WatchBoard_wb_padding, DptoPx(10));
+            mTextSize = array.getDimension(R.styleable.WatchBoard_wb_text_size, SptoPx(16));
+            mHourPointWidth = array.getDimension(R.styleable.WatchBoard_wb_hour_pointer_width, DptoPx(5));
+            mMinutePointWidth = array.getDimension(R.styleable.WatchBoard_wb_minute_pointer_width, DptoPx(3));
+            mSecondPointWidth = array.getDimension(R.styleable.WatchBoard_wb_second_pointer_width, DptoPx(2));
+            mPointRadius = (int) array.getDimension(R.styleable.WatchBoard_wb_pointer_corner_radius, DptoPx(10));
+            mPointEndLength = array.getDimension(R.styleable.WatchBoard_wb_pointer_end_length, DptoPx(10));
+
+            mColorLong = array.getColor(R.styleable.WatchBoard_wb_scale_long_color, Color.argb(225, 0, 0, 0));
+            mColorShort = array.getColor(R.styleable.WatchBoard_wb_scale_short_color, Color.argb(125, 0, 0, 0));
+            mHourPointColor = array.getColor(R.styleable.WatchBoard_wb_hour_pointer_color, Color.BLACK);
+            mMinutePointColor = array.getColor(R.styleable.WatchBoard_wb_minute_pointer_color, Color.BLACK);
+            mSecondPointColor = array.getColor(R.styleable.WatchBoard_wb_second_pointer_color, Color.RED);
         }catch (Exception e){
-//            mColorLong = getContext().getColor(R.color.colorPrimaryDark);
-//            mColorShort = getContext().getColor(R.color.colorPrimaryDark);
+            //一旦出现错误全部使用默认值
+            mPadding = DptoPx(10);
+            mTextSize = SptoPx(16);
+            mHourPointWidth = DptoPx(5);
+            mMinutePointWidth = DptoPx(3);
+            mSecondPointWidth = DptoPx(2);
+            mPointRadius = (int) DptoPx(10);
+            mPointEndLength = DptoPx(10);
+
+            mColorLong = Color.argb(225, 0, 0, 0);
+            mColorShort = Color.argb(125, 0, 0, 0);
+            mMinutePointColor = Color.BLACK;
+            mSecondPointColor = Color.RED;
         } finally {
             if(array != null){
                 array.recycle();
@@ -78,10 +89,16 @@ public class WatchBoard extends View {
         }
     }
 
-//    //Dp2Px
-//    private float DptoPx(int value){
-//        return SizeUtil.Dp
-//    }
+    //Dp转px
+    private float DptoPx(int value) {
+
+        return SizeUtil.dp2px(getContext(), value);
+    }
+
+    //sp转px
+    private float SptoPx(int value) {
+        return SizeUtil.sp2px(getContext(),value);
+    }
 
     //画笔初始化
     private void init() {
@@ -150,22 +167,23 @@ public class WatchBoard extends View {
     }
 
     //绘制刻度
-    private void paintScale(Canvas canvas){
-        mPaint.setStrokeWidth(SizeUtil.dp2px(getContext(),1));
+    private void paintScale(Canvas canvas) {
+        mPaint.setStrokeWidth(SizeUtil.Dp2Px(getContext(), 1));
         int lineWidth = 0;
-        for (int i = 0; i < 60 ; i++){
-            if(i % 5 == 0){//整点
-                mPaint.setStrokeWidth(SizeUtil.dp2px(getContext(),1.5f));
-                mPaint.setColor(getContext().getResources().getColor(R.color.colorLong));
-                lineWidth =40;
+        for (int i = 0; i < 60; i++) {
+            if (i % 5 == 0) { //整点
+                mPaint.setStrokeWidth(SizeUtil.Dp2Px(getContext(), 1.5f));
+                mPaint.setColor(mColorLong);
+                lineWidth = 40;
                 //===============绘制文字===复制网上的==start
-                mPaint.setTextSize(70);
+                mPaint.setTextSize(mTextSize);
                 String text = ((i / 5) == 0 ? 12 : (i / 5)) + "";
                 Rect textBound = new Rect();
                 mPaint.getTextBounds(text, 0, text.length(), textBound);
                 mPaint.setColor(Color.BLACK);
                 canvas.save();
-                canvas.translate(0, -mRadius + SizeUtil.dp2px(getContext(),5) + lineWidth + mPadding + (textBound.bottom - textBound.top) / 2);
+
+                canvas.translate(0, -mRadius + DptoPx(5) + lineWidth + mPadding + (textBound.bottom - textBound.top) / 2);
                 mPaint.setStyle(Paint.Style.FILL);
                 canvas.rotate(-6 * i);
                 canvas.drawText(text, -(textBound.right + textBound.left) / 2, -(textBound.bottom + textBound.top) / 2, mPaint);
@@ -173,11 +191,10 @@ public class WatchBoard extends View {
                 //===============绘制文字===复制网上的==end
             } else { //非整点
                 lineWidth = 30;
-                mPaint.setColor(getContext().getResources().getColor(R.color.colorShort));
-                mPaint.setStrokeWidth(SizeUtil.dp2px(getContext(),1));
+                mPaint.setColor(mColorShort);
+                mPaint.setStrokeWidth(DptoPx(1));
             }
-            canvas.drawLine(0, -mRadius + SizeUtil.dp2px(getContext(),10),
-                    0 , -mRadius + SizeUtil.dp2px(getContext(),10)+lineWidth , mPaint);
+            canvas.drawLine(0, -mRadius + mPadding, 0, -mRadius + mPadding + lineWidth, mPaint);
             canvas.rotate(6);
         }
     }
@@ -195,7 +212,7 @@ public class WatchBoard extends View {
         canvas.save();
         canvas.rotate(angleHour); //旋转到时针的角度
         RectF rectFHour = new RectF(-mHourPointWidth / 2, -mRadius * 3 / 5, mHourPointWidth / 2, mPointEndLength);
-        mPaint.setColor(getContext().getResources().getColor(R.color.colorShort)); //设置指针颜色
+        mPaint.setColor(mHourPointColor); //设置指针颜色
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(mHourPointWidth); //设置边界宽度
         canvas.drawRoundRect(rectFHour, mPointRadius, mPointRadius, mPaint); //绘制时针
@@ -204,21 +221,21 @@ public class WatchBoard extends View {
         canvas.save();
         canvas.rotate(angleMinute);
         RectF rectFMinute = new RectF(-mMinutePointWidth / 2, -mRadius * 3.5f / 5, mMinutePointWidth / 2, mPointEndLength);
-        mPaint.setColor(getContext().getResources().getColor(R.color.colorShort));
-        mPaint.setStrokeWidth(mHourPointWidth);
+        mPaint.setColor(mMinutePointColor);
+        mPaint.setStrokeWidth(mMinutePointWidth);
         canvas.drawRoundRect(rectFMinute, mPointRadius, mPointRadius, mPaint);
         canvas.restore();
         //绘制秒针
         canvas.save();
         canvas.rotate(angleSecond);
         RectF rectFSecond = new RectF(-mSecondPointWidth / 2, -mRadius + 15, mSecondPointWidth / 2, mPointEndLength);
-        mPaint.setColor(getContext().getResources().getColor(R.color.colorPrimary));
+        mPaint.setColor(mSecondPointColor);
         mPaint.setStrokeWidth(mSecondPointWidth);
         canvas.drawRoundRect(rectFSecond, mPointRadius, mPointRadius, mPaint);
         canvas.restore();
         //绘制中心小圆
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(550000);
+        mPaint.setColor(mSecondPointColor);
         canvas.drawCircle(0, 0, mSecondPointWidth * 4, mPaint);
     }
 
