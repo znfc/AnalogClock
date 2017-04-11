@@ -171,7 +171,6 @@ public class WatchBoard extends View {
         //绘制指针
         paintPointer(canvas);
 
-        canvas.restore();
         postInvalidateDelayed(1000);
     }
 
@@ -197,8 +196,8 @@ public class WatchBoard extends View {
                 Rect textBound = new Rect();
                 mPaint.getTextBounds(text, 0, text.length(), textBound);
                 mPaint.setColor(Color.BLACK);
-                canvas.save();
 
+                canvas.save();
                 canvas.translate(0, -mRadius + DptoPx(5) + lineWidth + mPadding + (textBound.bottom - textBound.top) / 2);
                 mPaint.setStyle(Paint.Style.FILL);
                 canvas.rotate(-6 * i);
